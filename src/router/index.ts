@@ -1,17 +1,23 @@
-import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
+import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router';
 
-import HomeView from '../views/HomeView.vue'
+import Index from '../views/Index.vue';
+import Lantern from '../views/Lantern.vue';
 
 const routes: Array<RouteRecordRaw> = [
   {
     path: '/',
-    name: 'home',
-    component: HomeView
-  }
-]
+    name: 'index',
+    component: Index,
+  },
+  {
+    path: '/lantern',
+    name: 'lantern',
+    component: Lantern,
+  },
+];
 
 const router = createRouter({
   history: createWebHistory(),
-  routes
-})
-export default router
+  routes,
+});
+export default router;
