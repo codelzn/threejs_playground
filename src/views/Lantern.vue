@@ -3,6 +3,7 @@
 </template>
 <script setup lang="ts">
 import * as THREE from 'three'
+import gsap from 'gsap';
 import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader'
 import { GLTFLoader, GLTF } from 'three/examples/jsm/loaders/GLTFLoader'
 import { onMounted, onUnmounted, ref } from 'vue';
@@ -24,10 +25,12 @@ class Lantern extends Base3D {
     this.frag = frag;
     this.renderer.outputEncoding = THREE.sRGBEncoding;
     this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    this.renderer.toneMappingExposure = 0.5;
+    this.renderer.toneMappingExposure = 1;
+    this.controls.autoRotate = true;
+    this.controls.autoRotateSpeed = 0.3;
     this.rgbeLoader = new RGBELoader();
     this.gltfLoader = new GLTFLoader(this.loaderManager);
-    this.rgbeLoader.loadAsync('/hdr/sky01.hdr').then(texture => {
+    this.rgbeLoader.loadAsync('/hdr/sky02.hdr').then(texture => {
       texture.mapping = THREE.EquirectangularReflectionMapping;
       this.scene.background = texture;
       this.scene.environment = texture;
@@ -50,11 +53,30 @@ class Lantern extends Base3D {
       vertexShader: this.vert,
       fragmentShader: this.frag,
       side: THREE.DoubleSide,
-      transparent: true,
     })
-    const lantern = this.gltf!.scene.children[1] as THREE.Mesh;
-    lantern.material = this.material;
-    this.scene.add(this.gltf!.scene);
+    for (let i = 0;i < 150;i++) {
+      const lantern = this.gltf!.scene.clone(true)
+      lantern.position.set(
+        (Math.random() - 0.5) * 300,
+        Math.random() * 60 + 25,
+        (Math.random() - 0.5) * 300
+      )
+      gsap.to(lantern.rotation, {
+        y: Math.PI * 2,
+        duration: 10 + Math.random() * 10,
+        repeat: -1,
+      })
+      gsap.to(lantern.position, {
+        x: "+=" + Math.random(),
+        y: "+=" + Math.random() * 20,
+        duration: 5 + Math.random() * 15,
+        repeat: -1,
+        yoyo: true,
+      })
+      const lanternMesh = lantern.children[1] as THREE.Mesh;
+      lanternMesh.material = this.material;
+      this.scene.add(lantern)
+    }
   }
 
   private _animate() {

@@ -1,7 +1,5 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
-import gsap from 'gsap';
-import GUI from 'lil-gui';
 
 export default class Base3D {
   protected canvas: HTMLCanvasElement;
@@ -11,7 +9,6 @@ export default class Base3D {
   protected renderer: THREE.WebGLRenderer;
   protected controls: OrbitControls;
   protected clock: THREE.Clock;
-  protected gui?: GUI;
   protected loaderManager: THREE.LoadingManager;
   protected textureLoader: THREE.TextureLoader;
   constructor(canvas: HTMLCanvasElement) {
