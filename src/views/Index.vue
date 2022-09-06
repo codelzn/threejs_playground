@@ -4,5 +4,8 @@
     <li>
       <router-link to="/lantern">Lantern</router-link>
     </li>
+    <li>
+      <router-link to="/water">Water</router-link>
+    </li>
   </ul>
 </template>
