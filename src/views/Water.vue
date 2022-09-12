@@ -15,6 +15,16 @@ type Params = {
   uWareFrequency: number;
   // 高低
   uScale: number;
+  // 噪音频率
+  uNoiseFrequency: number;
+  // 噪音高度
+  uNoiseScale: number;
+  // 横纵比
+  uXzScale: number;
+  // 低处的颜色
+  uLowColor: string;
+  // 高处的颜色
+  uHighColor: string;
   // 自定义
   [key: string]: any;
 };
@@ -29,8 +39,13 @@ class Water extends Base3D {
     this.gui = new GUI();
     this.camera.position.set(1, 1, 1);
     this.params = {
-      uWareFrequency: 20,
-      uScale: 0.1,
+      uWareFrequency: 14,
+      uScale: 0.03,
+      uXzScale: 1.5,
+      uNoiseFrequency: 10,
+      uNoiseScale: 1.5,
+      uLowColor: "#ff0000",
+      uHighColor: "#ffff00",
     };
   }
   public init() {
@@ -41,7 +56,7 @@ class Water extends Base3D {
   }
 
   private _setMesh() {
-    this.planeGeometry = new THREE.PlaneBufferGeometry(1, 1, 512, 512);
+    this.planeGeometry = new THREE.PlaneBufferGeometry(1, 1, 1024, 1024);
     this.planeMaterial = new THREE.ShaderMaterial({
       vertexShader,
       fragmentShader,
@@ -51,6 +66,11 @@ class Water extends Base3D {
         uWareFrequency: { value: this.params.uWareFrequency },
         uScale: { value: this.params.uScale },
         uTime: { value: 0 },
+        uXzScale: { value: this.params.uXzScale },
+        uNoiseFrequency: { value: this.params.uNoiseFrequency },
+        uNoiseScale: { value: this.params.uNoiseScale },
+        uLowColor: { value: new THREE.Color(this.params.uLowColor) },
+        uHighColor: { value: new THREE.Color(this.params.uHighColor) },
       },
     });
     this.plane = new THREE.Mesh(this.planeGeometry, this.planeMaterial);
@@ -62,8 +82,27 @@ class Water extends Base3D {
     this.gui.add(this.params, "uWareFrequency", 1, 100, 0.1).onChange(() => {
       this.planeMaterial!.uniforms.uWareFrequency.value = this.params.uWareFrequency;
     });
-    this.gui.add(this.params, "uScale", 0, 1, 0.01).onChange(() => {
+    this.gui.add(this.params, "uScale", 0, 1, 0.001).onChange(() => {
       this.planeMaterial!.uniforms.uScale.value = this.params.uScale;
+    });
+    this.gui.add(this.params, "uNoiseFrequency", 1, 100, 0.1).onChange(() => {
+      this.planeMaterial!.uniforms.uNoiseFrequency.value = this.params.uNoiseFrequency;
+    });
+    this.gui.add(this.params, "uNoiseScale", 0, 5, 0.001).onChange(() => {
+      this.planeMaterial!.uniforms.uNoiseScale.value = this.params.uNoiseScale;
+    });
+    this.gui.add(this.params, "uXzScale", 0, 5, 0.01).onChange(() => {
+      this.planeMaterial!.uniforms.uXzScale.value = this.params.uXzScale;
+    });
+    this.gui.addColor(this.params, "uLowColor").onChange(() => {
+      this.planeMaterial!.uniforms.uLowColor.value = new THREE.Color(
+        this.params.uLowColor
+      );
+    });
+    this.gui.addColor(this.params, "uHighColor").onChange(() => {
+      this.planeMaterial!.uniforms.uHighColor.value = new THREE.Color(
+        this.params.uHighColor
+      );
     });
   }
 
