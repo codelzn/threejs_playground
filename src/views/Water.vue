@@ -25,6 +25,14 @@ type Params = {
   uLowColor: string;
   // 高处的颜色
   uHighColor: string;
+  // 水流的X轴速度
+  uXspeed: number;
+  // 水流的Z轴速度
+  uZspeed: number;
+  // 噪声波纹速度
+  uNoiseSpeed: number;
+  // 透明度
+  uOpacity: number;
   // 自定义
   [key: string]: any;
 };
@@ -46,6 +54,10 @@ class Water extends Base3D {
       uNoiseScale: 1.5,
       uLowColor: "#ff0000",
       uHighColor: "#ffff00",
+      uXspeed: 1,
+      uZspeed: 1,
+      uNoiseSpeed: 1,
+      uOpacity: 1,
     };
   }
   public init() {
@@ -71,6 +83,10 @@ class Water extends Base3D {
         uNoiseScale: { value: this.params.uNoiseScale },
         uLowColor: { value: new THREE.Color(this.params.uLowColor) },
         uHighColor: { value: new THREE.Color(this.params.uHighColor) },
+        uXspeed: { value: this.params.uXspeed },
+        uZspeed: { value: this.params.uZspeed },
+        uNoiseSpeed: { value: this.params.uNoiseSpeed },
+        uOpacity: { value: this.params.uOpacity },
       },
     });
     this.plane = new THREE.Mesh(this.planeGeometry, this.planeMaterial);
@@ -103,6 +119,18 @@ class Water extends Base3D {
       this.planeMaterial!.uniforms.uHighColor.value = new THREE.Color(
         this.params.uHighColor
       );
+    });
+    this.gui.add(this.params, "uXspeed", 0, 10, 0.01).onChange(() => {
+      this.planeMaterial!.uniforms.uXspeed.value = this.params.uXspeed;
+    });
+    this.gui.add(this.params, "uZspeed", 0, 10, 0.01).onChange(() => {
+      this.planeMaterial!.uniforms.uZspeed.value = this.params.uZspeed;
+    });
+    this.gui.add(this.params, "uNoiseSpeed", 0, 5, 0.01).onChange(() => {
+      this.planeMaterial!.uniforms.uNoiseSpeed.value = this.params.uNoiseSpeed;
+    });
+    this.gui.add(this.params, "uOpacity", 0, 1, 0.01).onChange(() => {
+      this.planeMaterial!.uniforms.uOpacity.value = this.params.uOpacity;
     });
   }
 
