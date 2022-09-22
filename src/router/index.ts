@@ -5,6 +5,7 @@ import Lantern from '../views/Lantern.vue';
 import Water from '../views/Water.vue';
 import Newwater from '../views/Newwater.vue';
 import Galaxy from '../views/Galaxy.vue';
+import FireWork from '../views/Firework.vue';
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -28,9 +29,14 @@ const routes: Array<RouteRecordRaw> = [
     component: Newwater,
   },
   {
-    path: '/gaxaly',
-    name: 'gaxaly',
+    path: '/galaxy',
+    name: 'galaxy',
     component: Galaxy,
+  },
+  {
+    path: '/firework',
+    name: 'firework',
+    component: FireWork,
   },
 ];
 

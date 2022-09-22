@@ -11,7 +11,10 @@
       <router-link to="/newwater">NewWater</router-link>
     </li>
     <li>
-      <router-link to="/gaxaly">Gaxaly</router-link>
+      <router-link to="/galaxy">Gaxaly</router-link>
+    </li>
+    <li>
+      <router-link to="/firework">Firework</router-link>
     </li>
   </ul>
 </template>

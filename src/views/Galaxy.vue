@@ -143,10 +143,20 @@ class Galaxy extends Base3D {
     requestAnimationFrame(this._animate.bind(this));
     this.renderer.render(this.scene, this.camera);
     this.controls.update();
-    this.material!.uniforms.uTime.value = this.clock.getElapsedTime();
+    this.material && (this.material.uniforms.uTime.value = this.clock.getElapsedTime());
   }
 
-  public destroy() {}
+  public destroy() {
+    this.geometry?.dispose();
+    this.material?.dispose();
+    this.scene.remove(this.points!);
+    this.points = null;
+    this.geometry = null;
+    this.material = undefined;
+    this.gui?.destroy();
+    this.controls.dispose();
+    this.renderer.dispose();
+  }
 }
 onMounted(() => {
   controller = new Galaxy(webgl.value, vertexShader, fragmentShader);
