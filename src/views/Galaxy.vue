@@ -36,13 +36,14 @@ class Galaxy extends Base3D {
   private params: GalaxyParams;
   constructor(canvas: HTMLCanvasElement, vert: string, frag: string) {
     super(canvas);
+    this.camera.position.set(0, 3, 3);
     this.vert = vert;
     this.frag = frag;
     this.helper = new THREE.AxesHelper(100);
     this.scene.add(this.helper);
     // this.gui = new GUI();
     this.params = {
-      count: 1000,
+      count: 10000,
       size: 0.1,
       radius: 5,
       branches: 4,
@@ -75,7 +76,7 @@ class Galaxy extends Base3D {
     const colors = new Float32Array(this.params.count * 3);
     const scales = new Float32Array(this.params.count);
     const imgIndex = new Float32Array(this.params.count);
-    [...new Array(this.params.count)].map((v, i) => {
+    [...new Array(this.params.count)].forEach((v, i) => {
       const current = i * 3;
       const branchAngel =
         (i % this.params.branches) * ((2 * Math.PI) / this.params.branches);
@@ -101,7 +102,7 @@ class Galaxy extends Base3D {
       // 顶点大小
       scales[current] = Math.random();
 
-      imgIndex[current] = 1 % 3;
+      imgIndex[current] = i % 3;
     });
     this.geometry.setAttribute("position", new THREE.BufferAttribute(positions, 3));
     this.geometry.setAttribute("color", new THREE.BufferAttribute(colors, 3));
@@ -132,6 +133,7 @@ class Galaxy extends Base3D {
       },
     });
     this.points = new THREE.Points(this.geometry, this.material);
+    this.camera.lookAt(this.points.position);
     this.scene.add(this.points);
   }
 
