@@ -3,6 +3,7 @@
 </template>
 <script lang="ts" setup>
 import * as THREE from "three";
+import { Water } from "three/examples/jsm/objects/Water2";
 import gsap from "gsap";
 import { RGBELoader } from "three/examples/jsm/loaders/RGBELoader";
 import { GLTFLoader, GLTF } from "three/examples/jsm/loaders/GLTFLoader";
@@ -26,6 +27,13 @@ class FireWorks {
   private startPoint: THREE.Points;
   private fireworks: THREE.Points;
   private clock: THREE.Clock;
+  private scene?: THREE.Scene
+  private listener1: THREE.AudioListener;
+  private listener2: THREE.AudioListener;
+  private sound: THREE.Audio;
+  private sendSound: THREE.Audio;
+  private play: boolean = false;
+  private sendSoundplay: boolean = false;
   constructor(color: string, to: { x: number, y: number, z: number }, from = { x: 0, y: 0, z: 0 }) {
     this.color = new THREE.Color(color);
     this.startGeometry = new THREE.BufferGeometry();
@@ -47,7 +55,7 @@ class FireWorks {
       depthWrite: false,
       uniforms: {
         uTime: { value: 0 },
-        uSize: { value: 20 },
+        uSize: { value: 10 },
         uColor: { value: this.color },
       }
     })
@@ -91,32 +99,61 @@ class FireWorks {
       }
     })
     this.fireworks = new THREE.Points(this.fireworkGeometry, this.fireworkMaterial);
+    // music
+    this.listener1 = new THREE.AudioListener()
+    this.listener2 = new THREE.AudioListener()
+    this.sound = new THREE.Audio(this.listener1)
+    this.sendSound = new THREE.Audio(this.listener2)
+
+    const audioLoader = new THREE.AudioLoader()
+    audioLoader.load(`/audio/pow${Math.floor(Math.random() * 4) + 1}.ogg`, buffer => {
+      this.sound.setBuffer(buffer)
+      this.sound.setLoop(false)
+      this.sound.setVolume(0.5)
+    })
+    audioLoader.load(`/audio/send.mp3`, buffer => {
+      this.sendSound.setBuffer(buffer)
+      this.sendSound.setLoop(false)
+      this.sendSound.setVolume(0.2)
+    })
+
   }
 
   public addScene(scene: THREE.Scene, camera: THREE.PerspectiveCamera): void {
-    scene.add(this.startPoint)
-    scene.add(this.fireworks)
+    this.scene = scene
+    this.scene.add(this.startPoint)
+    this.scene.add(this.fireworks)
   }
 
-  public update() {
+  public update(): void | string {
     const elapsedTime = this.clock.getElapsedTime();
-    if (elapsedTime < 1) {
+    if (elapsedTime > 0.2 && elapsedTime < 1) {
+      if(!this.sendSound.isPlaying && !this.sendSoundplay) {
+        this.sendSound.play()
+        this.sendSoundplay = true
+      }
       this.startMaterial.uniforms.uTime.value = elapsedTime;
-      this.startMaterial.uniforms.uSize.value = 20;
+      this.startMaterial.uniforms.uSize.value = 10;
       this.fireworkMaterial.uniforms.uSize.value = 0;
-    } else {
+    } else if(elapsedTime > 0.2) {
       const time = elapsedTime - 1
       this.startMaterial.uniforms.uSize.value = 0;
       this.startPoint.clear()
       this.startGeometry.dispose()
       this.startMaterial.dispose()
-
+      if(!this.sound.isPlaying && !this.play) {
+        this.sound.play()
+        this.play = true
+      }
       this.fireworkMaterial.uniforms.uSize.value = 20;
       this.fireworkMaterial.uniforms.uTime.value = time;
       if (time > 5) {
+        this.fireworkMaterial.uniforms.uSize.value = 0;
         this.fireworks.clear()
         this.fireworkGeometry.dispose()
         this.fireworkMaterial.dispose()
+        this.scene?.remove(this.startPoint, this.fireworks)
+        return 'remove'
       }
     }
 
@@ -126,6 +163,7 @@ class Lantern extends Base3D {
   private rgbeLoader: RGBELoader;
   private gltfLoader: GLTFLoader;
   private gltf?: GLTF;
+  private house?: GLTF;
   private material?: THREE.ShaderMaterial;
   private vert: string;
   private frag: string;
@@ -136,8 +174,8 @@ class Lantern extends Base3D {
     this.frag = frag;
     this.renderer.outputEncoding = THREE.sRGBEncoding;
     this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    this.renderer.toneMappingExposure = 1;
-    this.camera.position.set(0, 0, 20);
+    this.renderer.toneMappingExposure = 0.6;
+    this.camera.position.set(0, 50, 50);
     this.controls.autoRotate = true;
     this.controls.autoRotateSpeed = 0.3;
     this.rgbeLoader = new RGBELoader();
@@ -150,6 +188,20 @@ class Lantern extends Base3D {
     this.gltfLoader.load("/model/lantern.glb", (gltf) => {
       this.gltf = gltf;
     });
+    this.gltfLoader.load("/model/newyears_min.glb", gltf => {
+      this.house = gltf;
+      this.scene.add(this.house.scene);
+      // 创建水面
+      const waterGeometry = new THREE.PlaneBufferGeometry(100, 100);
+      const water = new Water(waterGeometry, {
+        scale: 4,
+        textureHeight: 1024,
+        textureWidth: 1024
+      })
+      water.rotation.x = - Math.PI * 0.5
+      water.position.y = 0.1;
+      this.scene.add(water)
+    })
   }
 
   public init() {
@@ -171,7 +223,7 @@ class Lantern extends Base3D {
       const lantern = this.gltf!.scene.clone(true);
       lantern.position.set(
         (Math.random() - 0.5) * 300,
-        Math.random() * 60 + 25,
+        Math.random() * 40 + 20,
         (Math.random() - 0.5) * 300
       );
       gsap.to(lantern.rotation, {
@@ -186,7 +238,7 @@ class Lantern extends Base3D {
         repeat: -1,
         yoyo: true,
       });
-      const lanternMesh = lantern.children[1] as THREE.Mesh;
+      const lanternMesh = lantern.children[0] as THREE.Mesh;
       lanternMesh.material = this.material;
       this.scene.add(lantern);
     }
@@ -196,8 +248,9 @@ class Lantern extends Base3D {
     requestAnimationFrame(this._animate.bind(this));
     this.renderer.render(this.scene, this.camera);
     this.controls.update();
-    this.fireworks.forEach(firework => {
-      firework.update();
+    this.fireworks.forEach((firework, i) => {
+      const result = firework.update();
+      result === 'remove' && this.fireworks.splice(i, 1)
     });
   }
 
