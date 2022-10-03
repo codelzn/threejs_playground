@@ -152,6 +152,7 @@ class Water extends Base3D {
     this.plane = null!;
     this.planeGeometry = null!;
     this.planeMaterial = null!;
+    window.removeEventListener('reisze', this._setResize.bind(this))
   }
 }
 onMounted(() => {

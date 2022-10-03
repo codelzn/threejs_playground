@@ -156,6 +156,7 @@ class Galaxy extends Base3D {
     this.gui?.destroy();
     this.controls.dispose();
     this.renderer.dispose();
+    window.removeEventListener('resize', this._setResize.bind(this))
   }
 }
 onMounted(() => {

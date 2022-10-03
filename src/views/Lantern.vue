@@ -73,7 +73,7 @@ class Lantern extends Base3D {
         repeat: -1,
         yoyo: true,
       });
-      const lanternMesh = lantern.children[1] as THREE.Mesh;
+      const lanternMesh = lantern.children[0] as THREE.Mesh;
       lanternMesh.material = this.material;
       this.scene.add(lantern);
     }
@@ -93,6 +93,7 @@ class Lantern extends Base3D {
     this.scene = null!;
     this.camera = null!;
     this.controls = null!;
+    window.removeEventListener('resize', this._setResize.bind(this))
   }
 }
 onMounted(() => {

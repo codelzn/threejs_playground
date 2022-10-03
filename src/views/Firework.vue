@@ -192,7 +192,7 @@ class Lantern extends Base3D {
       this.house = gltf;
       this.scene.add(this.house.scene);
       // 创建水面
-      const waterGeometry = new THREE.PlaneBufferGeometry(100, 100);
+      const waterGeometry = new THREE.PlaneGeometry(100, 100);
       const water = new Water(waterGeometry, {
         scale: 4,
         textureHeight: 1024,
@@ -262,6 +262,7 @@ class Lantern extends Base3D {
     this.scene = null!;
     this.camera = null!;
     this.controls = null!;
+    window.removeEventListener('resize', this._setResize.bind(this))
   }
 
   private _fireWork() {

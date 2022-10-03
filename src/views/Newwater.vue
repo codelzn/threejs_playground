@@ -73,6 +73,7 @@ class Newwater extends Base3D {
     this.scene = null!;
     this.camera = null!;
     this.controls = null!;
+    window.removeEventListener('resize', this._setResize.bind(this))
   }
 }
 onMounted(() => {

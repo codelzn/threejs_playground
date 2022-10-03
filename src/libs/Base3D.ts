@@ -11,7 +11,7 @@ export default class Base3D {
   protected clock: THREE.Clock;
   protected loaderManager: THREE.LoadingManager;
   protected textureLoader: THREE.TextureLoader;
-  constructor(canvas: HTMLCanvasElement) {
+  protected constructor(canvas: HTMLCanvasElement) {
     this.canvas = canvas;
 
     this.scene = new THREE.Scene();
