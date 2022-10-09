@@ -17,6 +17,9 @@
       <router-link to="/firework">Firework</router-link>
     </li>
     <li>
+      <router-link to="/withcss">Withcss</router-link>
+    </li>
+    <li>
       <router-link to="/debug">Debug</router-link>
     </li>
     <li>

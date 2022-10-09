@@ -7,6 +7,7 @@ import Newwater from '../views/Newwater.vue';
 import Galaxy from '../views/Galaxy.vue';
 import FireWork from '../views/Firework.vue';
 import Debug from '../views/Debug.vue';
+import WithCss from '../views/Withcss.vue'
 import ShaderTest from '../views/ShaderTest.vue';
 
 const routes: Array<RouteRecordRaw> = [
@@ -39,6 +40,11 @@ const routes: Array<RouteRecordRaw> = [
     path: '/firework',
     name: 'firework',
     component: FireWork,
+  },
+  {
+    path: '/withcss',
+    name: 'withcss',
+    component: WithCss,
   },
   {
     path: '/debug',
