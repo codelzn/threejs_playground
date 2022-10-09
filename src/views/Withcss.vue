@@ -19,6 +19,7 @@ class Withcss extends Base3D {
   private earthLabel?: CSS2DObject
   private moonLabel?: CSS2DObject
   private japanLabel?: CSS2DObject
+  private curve: THREE.CatmullRomCurve3
   constructor(canvas: HTMLCanvasElement) {
     super(canvas)
     this.camera.position.set(0, 5, -10)
@@ -31,6 +32,21 @@ class Withcss extends Base3D {
     this.labelRenderer.domElement.style.left = '0px'
     this.labelRenderer.domElement.style.zIndex = '10'
     this.controls = new OrbitControls(this.camera, this.labelRenderer.domElement)
+    this.curve = new THREE.CatmullRomCurve3([
+      new THREE.Vector3(-10, 0, 10),
+      new THREE.Vector3(-5, 5, 5),
+      new THREE.Vector3(0, 0, 5),
+      new THREE.Vector3(5, -5, 5),
+      new THREE.Vector3(10, 0, 10)
+    ], true)
+    const points = this.curve.getPoints(50);
+    const geometry = new THREE.BufferGeometry().setFromPoints(points);
+
+    const material = new THREE.LineBasicMaterial({ color: 0xff0000 });
+
+    // Create the final object to add to the scene
+    const curveObject = new THREE.Line(geometry, material);
+    this.scene.add(curveObject)
     this._init()
   }
   private _init() {
@@ -103,16 +119,20 @@ class Withcss extends Base3D {
   private _animate() {
     this.labelRenderer.render(this.scene, this.camera)
     this.renderer.render(this.scene, this.camera)
+    const elapsed = this.clock.getElapsedTime()
+    const time = elapsed * 0.2 % 1
+    const point = this.curve.getPointAt(time)
+    console.log(point);
+    // this.moon!.position.copy(point)
+    this.camera.position.copy(point)
+    this.camera.lookAt(this.earth!.position)
     this.moon!.position.set(Math.sin(this.clock.getElapsedTime()) * 5, 0, Math.cos(this.clock.getElapsedTime()) * 5);
-    const japanPosition = this.japanLabel!.position.clone()
-    const labelDistance = japanPosition.distanceTo(this.camera.position)
-    japanPosition.project(this.camera)
-    this.raycaster.setFromCamera(japanPosition, this.camera)
-    const intersects = this.raycaster.intersectObjects(this.scene.children, true)
-    this.controls.update()
     this.renderer.setAnimationLoop(this._animate.bind(this))
   }
-  public destory() { }
+  public destory() {
+    this.renderer.dispose()
+    this.controls.dispose()
+  }
 }
 onMounted(() => {
   controler = new Withcss(webgl.value)

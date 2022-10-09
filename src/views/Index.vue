@@ -20,10 +20,7 @@
       <router-link to="/withcss">Withcss</router-link>
     </li>
     <li>
-      <router-link to="/debug">Debug</router-link>
-    </li>
-    <li>
-      <router-link to="/test">Test</router-link>
+      <router-link to="/flower">Line</router-link>
     </li>
   </ul>
 </template>
