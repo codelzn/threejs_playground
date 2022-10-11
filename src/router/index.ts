@@ -7,7 +7,7 @@ import Newwater from '../views/Newwater.vue';
 import Galaxy from '../views/Galaxy.vue';
 import FireWork from '../views/Firework.vue';
 import WithCss from '../views/Withcss.vue'
-import Flower from '../views/flower.vue'
+import Flower from '../views/Flower.vue'
 
 const routes: Array<RouteRecordRaw> = [
   {
