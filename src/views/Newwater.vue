@@ -1,7 +1,9 @@
 <template>
+  <Back />
   <canvas ref="webgl"></canvas>
 </template>
 <script setup lang="ts">
+import Back from '../components/Back.vue'
 import * as THREE from "three";
 import { Water } from "three/examples/jsm/objects/Water2";
 import { RGBELoader } from "three/examples/jsm/loaders/RGBELoader";
@@ -15,6 +17,7 @@ class Newwater extends Base3D {
   private rgbeLoader: RGBELoader;
   private gltfLoader: GLTFLoader;
   private directionalLight: THREE.DirectionalLight;
+  private animeId?: number;
   constructor(canvas: HTMLCanvasElement) {
     super(canvas);
     this.rgbeLoader = new RGBELoader(this.loaderManager);
@@ -60,12 +63,13 @@ class Newwater extends Base3D {
   }
 
   private _animate() {
-    requestAnimationFrame(this._animate.bind(this));
+    this.animeId = requestAnimationFrame(this._animate.bind(this));
     this.controls.update();
     this.renderer.render(this.scene, this.camera);
   }
 
   public destory() {
+    cancelAnimationFrame(this.animeId!);
     this.renderer.dispose();
     this.renderer.forceContextLoss();
     this.renderer.domElement.remove();

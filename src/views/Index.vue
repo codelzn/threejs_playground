@@ -20,7 +20,7 @@
       <router-link to="/withcss">Withcss</router-link>
     </li>
     <li>
-      <router-link to="/flower">Line</router-link>
+      <router-link to="/sampleanime">SampleAnime</router-link>
     </li>
   </ul>
 </template>

@@ -1,9 +1,11 @@
 <template>
+  <Back />
   <div id="withcss">
     <canvas ref="webgl"></canvas>
   </div>
 </template>
 <script setup lang="ts">
+import Back from '../components/Back.vue'
 import { ref, onMounted, onUnmounted } from 'vue'
 import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
@@ -20,6 +22,7 @@ class Withcss extends Base3D {
   private moonLabel?: CSS2DObject
   private japanLabel?: CSS2DObject
   private curve: THREE.CatmullRomCurve3
+  private animeId?: number
   constructor(canvas: HTMLCanvasElement) {
     super(canvas)
     this.camera.position.set(0, 5, -10)
@@ -122,14 +125,14 @@ class Withcss extends Base3D {
     const elapsed = this.clock.getElapsedTime()
     const time = elapsed * 0.2 % 1
     const point = this.curve.getPointAt(time)
-    console.log(point);
     // this.moon!.position.copy(point)
     this.camera.position.copy(point)
     this.camera.lookAt(this.earth!.position)
     this.moon!.position.set(Math.sin(this.clock.getElapsedTime()) * 5, 0, Math.cos(this.clock.getElapsedTime()) * 5);
-    this.renderer.setAnimationLoop(this._animate.bind(this))
+    this.animeId = requestAnimationFrame(this._animate.bind(this))
   }
   public destory() {
+    cancelAnimationFrame(this.animeId!)
     this.renderer.dispose()
     this.controls.dispose()
   }

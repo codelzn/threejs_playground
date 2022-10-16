@@ -1,7 +1,9 @@
 <template>
+  <Back />
   <canvas ref="webgl"></canvas>
 </template>
 <script setup lang="ts">
+import Back from '../components/Back.vue'
 import * as THREE from "three";
 import gsap from "gsap";
 import { RGBELoader } from "three/examples/jsm/loaders/RGBELoader";
@@ -19,6 +21,7 @@ class Lantern extends Base3D {
   private material?: THREE.ShaderMaterial;
   private vert: string;
   private frag: string;
+  private animeId?: number;
   constructor(canvas: HTMLCanvasElement, vert: string, frag: string) {
     super(canvas);
     this.vert = vert;
@@ -80,14 +83,14 @@ class Lantern extends Base3D {
   }
 
   private _animate() {
-    requestAnimationFrame(this._animate.bind(this));
+    this.animeId = requestAnimationFrame(this._animate.bind(this));
     this.renderer.render(this.scene, this.camera);
     this.controls.update();
   }
 
   public destory() {
+    cancelAnimationFrame(this.animeId!);
     this.renderer.dispose();
-    this.renderer.forceContextLoss();
     this.renderer.domElement.remove();
     this.renderer = null!;
     this.scene = null!;

@@ -1,7 +1,9 @@
 <template>
+  <Back />
   <canvas ref="webgl"></canvas>
 </template>
 <script lang="ts" setup>
+import Back from '../components/Back.vue'
 import * as THREE from "three";
 import { Water } from "three/examples/jsm/objects/Water2";
 import gsap from "gsap";
@@ -168,6 +170,7 @@ class Lantern extends Base3D {
   private vert: string;
   private frag: string;
   private fireworks: FireWorks[] = [];
+  private animeId?: number;
   constructor(canvas: HTMLCanvasElement, vert: string, frag: string) {
     super(canvas);
     this.vert = vert;
@@ -245,7 +248,7 @@ class Lantern extends Base3D {
   }
 
   private _animate() {
-    requestAnimationFrame(this._animate.bind(this));
+    this.animeId = requestAnimationFrame(this._animate.bind(this));
     this.renderer.render(this.scene, this.camera);
     this.controls.update();
     this.fireworks.forEach((firework, i) => {
@@ -255,6 +258,7 @@ class Lantern extends Base3D {
   }
 
   public destory() {
+    cancelAnimationFrame(this.animeId!);
     this.renderer.dispose();
     this.renderer.forceContextLoss();
     this.renderer.domElement.remove();

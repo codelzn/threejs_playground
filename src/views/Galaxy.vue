@@ -1,7 +1,9 @@
 <template>
+  <Back />
   <canvas ref="webgl"></canvas>
 </template>
 <script setup lang="ts">
+import Back from '../components/Back.vue'
 import { ref, onMounted, onUnmounted } from "vue";
 import * as THREE from "three";
 import GUI from "lil-gui";
@@ -34,6 +36,7 @@ class Galaxy extends Base3D {
   private texture2: THREE.Texture;
 
   private params: GalaxyParams;
+  private animeId?: number;
   constructor(canvas: HTMLCanvasElement, vert: string, frag: string) {
     super(canvas);
     this.camera.position.set(0, 3, 3);
@@ -140,13 +143,14 @@ class Galaxy extends Base3D {
   private _setGui() {}
 
   private _animate() {
-    requestAnimationFrame(this._animate.bind(this));
+    this.animeId = requestAnimationFrame(this._animate.bind(this));
     this.renderer.render(this.scene, this.camera);
     this.controls.update();
     this.material && (this.material.uniforms.uTime.value = this.clock.getElapsedTime());
   }
 
   public destroy() {
+    cancelAnimationFrame(this.animeId!);
     this.geometry?.dispose();
     this.material?.dispose();
     this.scene.remove(this.points!);

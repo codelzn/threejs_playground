@@ -1,7 +1,9 @@
 <template>
+  <Back />
   <canvas ref="webgl"></canvas>
 </template>
 <script setup lang="ts">
+import Back from '../components/Back.vue'
 import * as THREE from "three";
 import GUI from "lil-gui";
 import { ref, onMounted, onUnmounted } from "vue";
@@ -42,6 +44,7 @@ class Water extends Base3D {
   private planeMaterial?: THREE.ShaderMaterial;
   private params: Params;
   private gui: GUI;
+  private animeId?: number;
   constructor(canvas: HTMLCanvasElement) {
     super(canvas);
     this.gui = new GUI();
@@ -135,16 +138,18 @@ class Water extends Base3D {
   }
 
   private _animate() {
-    requestAnimationFrame(this._animate.bind(this));
+    this.animeId = requestAnimationFrame(this._animate.bind(this));
     this.planeMaterial!.uniforms.uTime.value = this.clock.getElapsedTime();
     this.controls.update();
     this.renderer.render(this.scene, this.camera);
   }
 
   public destory() {
+    cancelAnimationFrame(this.animeId!);
     this.renderer.dispose();
     this.renderer.forceContextLoss();
     this.renderer.domElement.remove();
+    this.gui.destroy();
     this.renderer = null!;
     this.scene = null!;
     this.camera = null!;

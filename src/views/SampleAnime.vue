@@ -1,7 +1,9 @@
 <template>
+  <Back />
   <canvas ref="webgl"></canvas>
 </template>
 <script lang="ts" setup>
+import Back from '../components/Back.vue'
 import { ref, onMounted, onUnmounted } from 'vue'
 import * as THREE from 'three'
 import gsap from 'gsap'
@@ -58,7 +60,9 @@ class Flower extends Base3D {
     this.renderer.setAnimationLoop(this._initRaf.bind(this))
   }
   public destroy() {
-
+    this.renderer.setAnimationLoop(null)
+    this.renderer.dispose()
+    this.controls.dispose()
   }
 }
 onMounted(() => {

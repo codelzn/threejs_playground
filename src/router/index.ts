@@ -7,7 +7,7 @@ import Newwater from '../views/Newwater.vue';
 import Galaxy from '../views/Galaxy.vue';
 import FireWork from '../views/Firework.vue';
 import WithCss from '../views/Withcss.vue'
-import Flower from '../views/Flower.vue'
+import SampleAnime from '../views/SampleAnime.vue'
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -46,9 +46,9 @@ const routes: Array<RouteRecordRaw> = [
     component: WithCss,
   },
   {
-    path: '/flower',
-    name: 'flower',
-    component: Flower,
+    path: '/sampleanime',
+    name: 'sampleanime',
+    component: SampleAnime,
   },
 ];
 
