@@ -6,8 +6,9 @@ import Water from '../views/Water.vue';
 import Newwater from '../views/Newwater.vue';
 import Galaxy from '../views/Galaxy.vue';
 import FireWork from '../views/Firework.vue';
-import WithCss from '../views/Withcss.vue'
-import SampleAnime from '../views/SampleAnime.vue'
+import WithCss from '../views/Withcss.vue';
+import SampleAnime from '../views/SampleAnime.vue';
+import Taotajima from '../views/Taotajima.vue';
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -49,6 +50,11 @@ const routes: Array<RouteRecordRaw> = [
     path: '/sampleanime',
     name: 'sampleanime',
     component: SampleAnime,
+  },
+  {
+    path: '/taotajima',
+    name: 'taotajima',
+    component: Taotajima,
   },
 ];
 
