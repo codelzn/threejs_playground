@@ -1,5 +1,6 @@
 <template>
   <Back />
+  <div class="debug" ref="debug"></div>
   <canvas ref="webgl"></canvas>
 </template>
 <script setup lang="ts">
@@ -10,6 +11,7 @@ import GUI from 'lil-gui'
 import vertexShader from "../assets/shaders/taotajima/vertex.glsl"
 import fragmentShader from "../assets/shaders/taotajima/fragment.glsl"
 const webgl = ref<HTMLCanvasElement>(null!);
+const debug = ref<HTMLDivElement>(null!);
 const imageUrls: string[] = [
   'https://webstatic.mihoyo.com/upload/static-resource/2021/11/08/02959a0f179436853c244dfc8b88e4e4_5824090375749016325.jpg',
   'https://webstatic.mihoyo.com/upload/static-resource/2021/11/08/306b7c8abc0f74c727be827788d5a75f_9123439517379119205.jpg',
@@ -22,6 +24,7 @@ class Sketch {
     width: number;
     height: number;
   };
+  private debug: HTMLDivElement;
   private scene: THREE.Scene;
   private renderer: THREE.WebGLRenderer;
   private camera: THREE.OrthographicCamera;
@@ -40,8 +43,9 @@ class Sketch {
   private scrollMinusOffset: number = 1;
   private isDone: boolean = false;
   private animeID?: number;
-  constructor(canvas: HTMLCanvasElement, imageUrls: string[] = []) {
+  constructor(canvas: HTMLCanvasElement, imageUrls: string[] = [], debug: HTMLDivElement) {
     this.imageUrls = imageUrls;
+    this.debug = debug;
     this.sizes = {
       width: window.innerWidth,
       height: window.innerHeight,
@@ -70,6 +74,7 @@ class Sketch {
       uTime: { value: 0 },
       uFixAspect: { value: this.sizes.height / this.sizes.width },
       uProgress: { value: 0 },
+      // uAccelは加速度
       uAccel: { value: new THREE.Vector2(0.5, 2.0) },
       uTexture0: { value: this.textures[0] },
       uTexture1: { value: this.textures[1] },
@@ -116,11 +121,37 @@ class Sketch {
       // 遠いときは、一番近い画像にゆっくり近づける
       this.scrollPosition += (target - this.scrollPosition) * 0.03
     }
-    console.log(this.scrollPosition);
     // 止まってるかどうかを判定
     target === this.scrollPosition ? this.isDone = true : this.isDone = true
+
+    const size = this.textures.length
+    let currentIndex = Math.floor(this.scrollPosition) % size
+    let nextIndex = (currentIndex + 1) % size
+
+    // マイナスの場合
+    if (this.scrollPosition < 0) {
+      currentIndex = (size * this.scrollMinusOffset - Math.abs(Math.floor(this.scrollPosition))) % size
+
+      if (currentIndex < 0) {
+        ++this.scrollMinusOffset
+        currentIndex = (size * this.scrollMinusOffset - Math.abs(Math.floor(this.scrollPosition))) % size
+      }
+
+      nextIndex = (currentIndex + 1) % size
+    }
+    this.debug.innerHTML = `
+    <ul>
+    <li>currentIndex: ${currentIndex}<li>
+    <li>nextIndex: ${nextIndex}</li>
+    <li>scrollPosition: ${this.scrollPosition.toFixed(3)}</li>
+    <li>target: ${target}</li>
+    <li>isDone: ${this.isDone}</li>
+    </ul>
+    `
     this.planeMaterial!.uniforms.uTime.value = this.clock.getElapsedTime();
     this.planeMaterial!.uniforms.uProgress.value = this.scrollPosition;
+    this.texture0 = currentIndex
+    this.texture1 = nextIndex
   }
 
   private _anime() {
@@ -146,7 +177,7 @@ class Sketch {
   }
 }
 onMounted(() => {
-  container = new Sketch(webgl.value, imageUrls);
+  container = new Sketch(webgl.value, imageUrls, debug.value);
 });
 onUnmounted(() => {
   container?.destroy();
@@ -164,5 +195,19 @@ canvas {
   display: block;
   top: 0;
   left: 0;
+}
+
+.debug {
+  position: fixed;
+  top: 0;
+  right: 5px;
+  z-index: 100;
+  background-color: yellow;
+
+  ul {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+  }
 }
 </style>
