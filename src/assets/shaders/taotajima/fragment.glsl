@@ -8,7 +8,7 @@ uniform vec2 uAccel;
 varying vec2 vUv;
 varying vec2 vUv1;
 
-// mirroredはミラーリング
+//https://github.com/yuichiroharai/glsl-y-repeat/blob/master/mirrored.glsl
 vec2 mirrored(vec2 v) {
   vec2 m = mod(v, 2.);
   return mix(m, 2.0 - m, step(1.0, m));
@@ -23,7 +23,7 @@ void main() {
 
   // fractは小数点以下を返す
   float pct = fract(uProgress);
-
+  // 切り替える時の波紋
   float delayValue = pct * 7. - uv.y * 2. + uv.x - 2.;
   // clampは最小値と最大値を指定して値を制限する
   delayValue = clamp(delayValue, 0., 1.);

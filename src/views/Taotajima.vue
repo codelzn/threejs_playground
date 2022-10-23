@@ -1,5 +1,9 @@
 <template>
   <Back />
+  <div class="spbtn" v-if="isMobile">
+    <div class="prev" @click="toPrev">prev</div>
+    <div class="next" @click="toNext">next</div>
+  </div>
   <div class="debug" ref="debug"></div>
   <canvas ref="webgl"></canvas>
 </template>
@@ -18,7 +22,22 @@ const imageUrls: string[] = [
   'https://webstatic.mihoyo.com/upload/static-resource/2021/11/08/55ccd259cca4f64ae81f2d113a153bae_8366165624319984079.png',
   'https://webstatic.mihoyo.com/upload/static-resource/2021/11/08/5f37fbd417ed2629ac812b04d6c978b7_8009591696062860345.jpg',
 ]
+// スマホかどうかを監視
+const isMobile = ref(false);
+const sketchResize = () => {
+  isMobile.value = window.innerWidth < 768;
+};
 let container: Sketch | null = null;
+const toPrev = () => {
+  if (container) {
+    container.toPrev();
+  }
+};
+const toNext = () => {
+  if (container) {
+    container.toNext();
+  }
+};
 class Sketch {
   private sizes: {
     width: number;
@@ -41,7 +60,6 @@ class Sketch {
   private scrollSpeed: number = 0.0;
   private scrollPosition: number = 0.0;
   private scrollMinusOffset: number = 1;
-  private isDone: boolean = false;
   private animeID?: number;
   constructor(canvas: HTMLCanvasElement, imageUrls: string[] = [], debug: HTMLDivElement) {
     this.imageUrls = imageUrls;
@@ -121,8 +139,6 @@ class Sketch {
       // 遠いときは、一番近い画像にゆっくり近づける
       this.scrollPosition += (target - this.scrollPosition) * 0.03
     }
-    // 止まってるかどうかを判定
-    target === this.scrollPosition ? this.isDone = true : this.isDone = true
 
     const size = this.textures.length
     let currentIndex = Math.floor(this.scrollPosition) % size
@@ -145,7 +161,6 @@ class Sketch {
     <li>nextIndex: ${nextIndex}</li>
     <li>scrollPosition: ${this.scrollPosition.toFixed(3)}</li>
     <li>target: ${target}</li>
-    <li>isDone: ${this.isDone}</li>
     </ul>
     `
     this.planeMaterial!.uniforms.uTime.value = this.clock.getElapsedTime();
@@ -157,7 +172,7 @@ class Sketch {
   private _anime() {
     this.animeID = window.requestAnimationFrame(this._anime.bind(this));
     this._update()
-    this.isDone && this.renderer.render(this.scene, this.camera);
+    this.renderer.render(this.scene, this.camera);
   }
 
   private _resize() {
@@ -171,17 +186,35 @@ class Sketch {
 
   public destroy() {
     window.removeEventListener('resize', this._resize.bind(this))
-    window.removeEventListener('wheel', this._resize.bind(this))
     this.renderer.dispose()
     window.cancelAnimationFrame(this.animeID!)
+  }
+  public toNext() {
+    const speed = [350, 320, 300, 280, 260, 230]
+    speed.forEach((s, i) => {
+      setTimeout(() => {
+        this.scrollSpeed += s * 0.0002
+      }, i * 100)
+    })
+  }
+  public toPrev() {
+    const speed = [350, 320, 300, 280, 260, 230]
+    speed.forEach((s, i) => {
+      setTimeout(() => {
+        this.scrollSpeed -= s * 0.0002
+      }, i * 100)
+    })
   }
 }
 onMounted(() => {
   container = new Sketch(webgl.value, imageUrls, debug.value);
+  sketchResize()
+  window.addEventListener('resize', sketchResize)
 });
 onUnmounted(() => {
   container?.destroy();
   container = null;
+  window.removeEventListener('resize', sketchResize)
 });
 </script>
 <style scoped lang="scss">
@@ -208,6 +241,21 @@ canvas {
     list-style: none;
     display: flex;
     flex-direction: column;
+  }
+}
+.spbtn {
+  position: fixed;
+  bottom: 20px;
+  right: 0;
+  z-index: 100;
+  background-color: white;
+  padding: 10px;
+  border-radius: 10px;
+  .prev {
+    color: red;
+  }
+  .next {
+    color: blue;
   }
 }
 </style>
