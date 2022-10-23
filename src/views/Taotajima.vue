@@ -113,7 +113,7 @@ class Sketch {
     this.scrollSpeed *= 0.7
 
     // 画像の切り替え 一番近い画像のインデックスを無目標に
-    const target = Math.floor(this.scrollPosition);
+    const target = Math.round(this.scrollPosition);
     if (Math.abs(target - this.scrollPosition) < 0.001) {
       // 近すぎると固定させる
       this.scrollPosition = target
