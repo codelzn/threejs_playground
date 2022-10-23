@@ -1,14 +1,6 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router';
 
 import Index from '../views/Index.vue';
-import Lantern from '../views/Lantern.vue';
-import Water from '../views/Water.vue';
-import Newwater from '../views/Newwater.vue';
-import Galaxy from '../views/Galaxy.vue';
-import FireWork from '../views/Firework.vue';
-import WithCss from '../views/Withcss.vue';
-import SampleAnime from '../views/SampleAnime.vue';
-import Taotajima from '../views/Taotajima.vue';
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -19,42 +11,47 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: '/lantern',
     name: 'lantern',
-    component: Lantern,
+    component: () => import('../views/Lantern.vue'),
   },
   {
     path: '/water',
     name: 'water',
-    component: Water,
+    component: () => import('../views/Water.vue'),
   },
   {
     path: '/newwater',
     name: 'newwater',
-    component: Newwater,
+    component: () => import('../views/Newwater.vue'),
   },
   {
     path: '/galaxy',
     name: 'galaxy',
-    component: Galaxy,
+    component: () => import('../views/Galaxy.vue'),
   },
   {
     path: '/firework',
     name: 'firework',
-    component: FireWork,
+    component: () => import('../views/Firework.vue'),
   },
   {
     path: '/withcss',
     name: 'withcss',
-    component: WithCss,
+    component: () => import('../views/Withcss.vue'),
   },
   {
     path: '/sampleanime',
     name: 'sampleanime',
-    component: SampleAnime,
+    component: () => import('../views/SampleAnime.vue'),
   },
   {
     path: '/taotajima',
     name: 'taotajima',
-    component: Taotajima,
+    component: () => import('../views/Taotajima.vue'),
+  },
+  {
+    path: '/transition1',
+    name: 'transition1',
+    component: () => import('../views/Transition1.vue'),
   },
 ];
 

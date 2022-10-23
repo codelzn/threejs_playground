@@ -1,5 +1,5 @@
 <template>
-  <h1>CodeLznのThree.js playground</h1>
+  <h1>CodeLznのThree.js<br />playground</h1>
   <ul>
     <li>
       <router-link to="/lantern">Lantern</router-link>
@@ -24,6 +24,9 @@
     </li>
     <li>
       <router-link to="/taotajima">Taotajima</router-link>
+    </li>
+    <li>
+      <router-link to="/transition1">Transition1</router-link>
     </li>
   </ul>
 </template>

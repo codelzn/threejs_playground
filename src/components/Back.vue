@@ -7,7 +7,9 @@
   z-index: 999;
   top: 0;
   left: 0;
-  background-color: #fff;
-  color: blue;
+  padding: 2px 10px;
+  background-color: skyblue;
+  border-radius: 10px;
+  color: orangered;
 }
 </style>

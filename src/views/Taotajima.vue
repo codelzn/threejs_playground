@@ -17,10 +17,9 @@ import fragmentShader from "../assets/shaders/taotajima/fragment.glsl"
 const webgl = ref<HTMLCanvasElement>(null!);
 const debug = ref<HTMLDivElement>(null!);
 const imageUrls: string[] = [
-  'https://webstatic.mihoyo.com/upload/static-resource/2021/11/08/02959a0f179436853c244dfc8b88e4e4_5824090375749016325.jpg',
-  'https://webstatic.mihoyo.com/upload/static-resource/2021/11/08/306b7c8abc0f74c727be827788d5a75f_9123439517379119205.jpg',
-  'https://webstatic.mihoyo.com/upload/static-resource/2021/11/08/55ccd259cca4f64ae81f2d113a153bae_8366165624319984079.png',
-  'https://webstatic.mihoyo.com/upload/static-resource/2021/11/08/5f37fbd417ed2629ac812b04d6c978b7_8009591696062860345.jpg',
+  '/imgs/img01.jpg',
+  '/imgs/img02.jpg',
+  '/imgs/img03.jpg',
 ]
 // スマホかどうかを監視
 const isMobile = ref(false);
@@ -235,14 +234,21 @@ canvas {
   top: 0;
   right: 5px;
   z-index: 100;
-  background-color: yellow;
-
-  ul {
+  background-color: orange;
+  border-radius: 10px;
+  padding: 5px 10px;
+  :deep(ul) {
     list-style: none;
     display: flex;
     flex-direction: column;
+    row-gap: 5px;
+    li {
+      color: white;
+      font-weight: 700;
+    }
   }
 }
+
 .spbtn {
   position: fixed;
   bottom: 20px;
@@ -251,9 +257,11 @@ canvas {
   background-color: white;
   padding: 10px;
   border-radius: 10px;
+
   .prev {
     color: red;
   }
+
   .next {
     color: blue;
   }
