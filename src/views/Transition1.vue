@@ -5,13 +5,13 @@
 <script setup lang="ts">
 import { onMounted, onUnmounted, ref } from "vue";
 import * as THREE from "three";
-import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
 import { ShaderPass } from 'three/examples/jsm/postprocessing/ShaderPass.js';
 import GUI from 'lil-gui'
 import gsap from "gsap";
 import { CurtainShader } from '../assets/shaders/transition1/effect1'
+import { RGBAShader } from "../assets/shaders/transition1/effect2";
 const webgl = ref<HTMLCanvasElement>(null!);
 let gl: Transition1 | null = null;
 class Transition1 {
@@ -23,22 +23,19 @@ class Transition1 {
   private camera: THREE.PerspectiveCamera = new THREE.PerspectiveCamera(
     60,
     this.sizes.width / this.sizes.height,
-    0.1,
+    1,
     3000
   );
   private renderer: THREE.WebGLRenderer = new THREE.WebGLRenderer({
     canvas: webgl.value,
     antialias: true,
   });
-  private controls: OrbitControls = new OrbitControls(
-    this.camera,
-    this.renderer.domElement
-  );
   private clock: THREE.Clock = new THREE.Clock();
   private gui: GUI = new GUI();
   private composer: EffectComposer = new EffectComposer(this.renderer);
   private renderPass: RenderPass = new RenderPass(this.scene, this.camera);
   private shaderPass: ShaderPass = new ShaderPass(CurtainShader);
+  private shaderPass2: ShaderPass = new ShaderPass(RGBAShader);
   private loaderManager: THREE.LoadingManager = new THREE.LoadingManager();
   private textureLoader: THREE.TextureLoader = new THREE.TextureLoader(this.loaderManager);
   private textureUrls: string[] = [
@@ -53,18 +50,23 @@ class Transition1 {
   private mouse: THREE.Vector2 = new THREE.Vector2();
   private mouseTarget: THREE.Vector2 = new THREE.Vector2();
   private animeId?: number;
+  private time: number = 0;
+  private oscilator: number = 0;
+  private slideProgress: number = 0;
+  private isComplete: boolean = true;
   constructor() {
     this.renderer.setSize(this.sizes.width, this.sizes.height);
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     this.renderer.physicallyCorrectLights = true;
-    // this.renderer.outputEncoding = THREE.sRGBEncoding;
     this.camera.position.set(0, 0, 900);
-    this.controls.enableDamping = true;
     this.composer.addPass(this.renderPass);
     this.composer.addPass(this.shaderPass);
+    this.composer.addPass(this.shaderPass2);
     this.textureUrls.forEach((url) => {
       this.textures.push(this.textureLoader.load(url));
     });
+    this.textures[this.textures.length] = this.textures[0];
+    console.log(this.textures);
     this.loaderManager.onLoad = () => {
       this._init();
     };
@@ -81,11 +83,68 @@ class Transition1 {
 
   private _setting() {
     const settings = {
-      progress: 0,
+      runAnimetion: () => this._runAnimetion(),
     }
-    this.gui.add(settings, 'progress', 0, 1, 0.01).onChange((value: number) => {
-      this.shaderPass.uniforms.uProgress.value = value;
+    this.gui.add(settings, 'runAnimetion')
+  }
+
+  private _runAnimetion() {
+    if (!this.isComplete) {
+      return;
+    }
+    let t1 = gsap.timeline();
+    if (this.slideProgress === this.textures.length - 1) {
+      this.slideProgress = 0;
+      this.camera.position.set(0, 0, 900);
+    }
+    t1.to(this.camera.position, {
+      x: "+=" + 2500,
+      duration: 1.5,
+      ease: 'power4.inOut',
+      onStart: () => {
+        this.isComplete = false;
+      },
+      onComplete: () => {
+        this.slideProgress += 1;
+        this.isComplete = true;
+      }
     })
+
+    t1.to(this.camera.position, {
+      z: 700,
+      duration: 1,
+      ease: 'power4.inOut',
+    }, 0)
+    t1.to(this.camera.position, {
+      z: 900,
+      duration: 1,
+      ease: 'power4.inOut',
+    }, 1)
+
+    t1.to(this.shaderPass.uniforms.uProgress, {
+      value: 1,
+      duration: 1,
+      ease: 'power3.inOut',
+    }, 0)
+
+    t1.to(this.shaderPass.uniforms.uProgress, {
+      value: 0,
+      duration: 1,
+      ease: 'power3.inOut',
+    }, 1)
+
+    t1.to(this.shaderPass2.uniforms.uProgress, {
+      value: 1,
+      duration: 1,
+      ease: 'power3.inOut',
+    }, 0)
+
+    t1.to(this.shaderPass2.uniforms.uProgress, {
+      value: 0,
+      duration: 1,
+      ease: 'power3.inOut',
+    }, 1)
+
   }
 
   private _addObjects() {
@@ -128,13 +187,17 @@ class Transition1 {
     this.composer.setSize(this.sizes.width, this.sizes.height);
   }
   private _render() {
-    this.composer.render();
-    this.controls.update();
+    this.time = this.clock.getElapsedTime();
+    this.oscilator = Math.sin(this.time * 0.1) * 0.5 + 0.5;
     this.mouseTarget.lerp(this.mouse, 0.1)
     this.groups.forEach(g => {
       g.rotation.x = - this.mouseTarget.y * 0.3;
       g.rotation.y = - this.mouseTarget.x * 0.3;
+      g.children.forEach((m, i) => {
+        m.position.z = (i + 1) * 100 + this.oscilator * 200;
+      })
     })
+    this.composer.render();
     this.animeId = window.requestAnimationFrame(this._render.bind(this));
   }
   public destroy() {
@@ -158,7 +221,7 @@ onUnmounted(() => {
 <style scoped lang="scss">
 .tips {
   position: fixed;
-  top: 0;
+  bottom: 0;
   left: 0;
   color: orange;
   background-color: #fff;
