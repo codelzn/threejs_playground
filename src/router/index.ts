@@ -53,6 +53,11 @@ const routes: Array<RouteRecordRaw> = [
     name: 'transition1',
     component: () => import('../views/Transition1.vue'),
   },
+  {
+    path: '/transition2',
+    name: 'transition2',
+    component: () => import('../views/Transition2.vue'),
+  },
 ];
 
 const router = createRouter({

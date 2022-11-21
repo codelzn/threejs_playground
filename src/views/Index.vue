@@ -28,6 +28,9 @@
     <li>
       <router-link to="/transition1">Transition1</router-link>
     </li>
+    <li>
+      <router-link to="/transition2">Transition2</router-link>
+    </li>
   </ul>
 </template>
 <style scoped lang="scss">
@@ -59,3 +62,5 @@ ul {
   }
 }
 </style>
+<script lang="ts">
+</script>

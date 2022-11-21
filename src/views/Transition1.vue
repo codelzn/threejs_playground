@@ -1,8 +1,10 @@
 <template>
+  <Back />
   <h5 class="tips">パソコンのみご覧いただけます</h5>
   <canvas ref="webgl"></canvas>
 </template>
 <script setup lang="ts">
+import Back from "../components/Back.vue";
 import { onMounted, onUnmounted, ref } from "vue";
 import * as THREE from "three";
 import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js';
@@ -208,6 +210,7 @@ class Transition1 {
       this.mouse.y = (e.clientY / this.sizes.height) * 2 - 1;
     })
     this.renderer.dispose();
+    this.gui.destroy();
   }
 }
 onMounted(() => {
