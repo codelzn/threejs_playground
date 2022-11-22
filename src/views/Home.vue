@@ -62,5 +62,3 @@ ul {
   }
 }
 </style>
-<script lang="ts">
-</script>
